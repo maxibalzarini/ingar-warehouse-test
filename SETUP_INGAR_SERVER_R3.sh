@@ -73,3 +73,13 @@ fi
 echo
 echo "SERVER READY R3"
 echo "Puerto 4317 activo · schema 053 · importación expuesta · DB preservada."
+
+
+# R3 persistence hardening: detach Node from terminal and publish Codespaces port for client demo.
+RECOVERY_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/RECOVER_R3_PERSISTENT.sh"
+if [[ -f "$RECOVERY_SCRIPT" ]]; then
+  bash "$RECOVERY_SCRIPT"
+else
+  echo "ERROR: falta $RECOVERY_SCRIPT" >&2
+  exit 10
+fi
