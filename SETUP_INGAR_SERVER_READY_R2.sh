@@ -46,6 +46,10 @@ mv "$SRC" "$TARGET"
 rm -rf "$TARGET.new"
 
 cd "$TARGET"
+
+# ZIP/GitHub no preserva de forma confiable el bit ejecutable del payload.
+chmod +x ./INSTALL_SERVER.sh ./START_INGAR.sh ./STOP_INGAR.sh ./STATUS_INGAR.sh ./scripts/install-linux-native.sh
+
 ./INSTALL_SERVER.sh
 ./START_INGAR.sh
 ./STATUS_INGAR.sh
