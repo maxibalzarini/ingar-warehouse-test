@@ -1,0 +1,27 @@
+name: Inspect R3 auth runtime
+on:
+  push:
+    paths:
+      - '.github/workflows/inspect-r3-auth.yml'
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect auth/session implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/r3
+          mkdir -p /tmp/r3
+          unzip -q INGAR_Warehouse_Server_1.0.51_SERVER_READY_R3_PAYLOAD.zip -d /tmp/r3
+          ROOT=/tmp/r3/ingar-warehouse-server
+          echo "=== FILES ==="
+          find "$ROOT" -type f | sed "s#$ROOT/##" | sort
+          echo "=== AUTH SEARCH ==="
+          grep -RniE "session|cookie|token|logout|login|expires|maxAge|SameSite|Secure|401|unauthor|auth" "$ROOT/src" "$ROOT/public" "$ROOT/scripts" 2>/dev/null | head -n 1200 || true
+          echo "=== AUTH-LIKE FILE CONTENTS ==="
+          while IFS= read -r f; do
+            echo "===== $f ====="
+            sed -n '1,260p' "$f"
+          done < <(find "$ROOT/src" "$ROOT/public" "$ROOT/scripts" -type f \( -iname '*auth*' -o -iname '*session*' -o -iname '*login*' -o -iname '*security*' \) | sort)
